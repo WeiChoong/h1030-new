@@ -1,0 +1,140 @@
+:root{
+  --left-w: 24%;
+  --main-w: 76%;
+}
+
+/* 基本佈局 */
+body, html { height:100%; margin:0; font-family: Arial, sans-serif; }
+.app-container { display:flex; height:100vh; }
+
+.left-panel {
+  width: var(--left-w);
+  padding:16px;
+  background:#f0f4f8;
+  overflow:auto;
+  box-sizing:border-box;
+}
+.main-panel { width: var(--main-w); position:relative; overflow:auto; background: #ffffff; }
+
+.calendar-wrapper { padding:20px; position:relative; }
+
+
+/* 月份切換按鈕居中 + 放大 */
+#calendar-controls {
+  display: flex;
+  justify-content: center;   /* 水平置中 */
+  align-items: center;       /* 垂直置中 */
+  gap: 20px;                 /* 按鈕與年份間距 */
+  font-size: 3em;            /* 放大 3 倍 */
+  margin-bottom: 20px;
+}
+
+/* 日曆格子 */
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+/* 單日格子 */
+.day {
+  padding: 10px 0;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+}
+
+/* 今天高亮 */
+.day.today {
+  background-color: #ffd700;
+  font-weight: bold;
+}
+
+/* 非本月日期半透明灰色 */
+.day.other-month {
+  color: rgba(0,0,0,0.3);
+}
+
+
+/* weather 背景層（會放在日曆背後）*/
+.weather-bg {
+  position:absolute;
+  left:0; top:0; right:0; bottom:0;
+  display:flex; align-items:center; justify-content:center;
+  z-index:0;
+  pointer-events:none;
+}
+.weather-video {
+  width:75vw; max-width:1200px; height:auto;
+  object-fit:cover;
+  opacity:1;
+  transition: opacity 1s ease;
+  filter: blur(2px);
+}
+/* weather info */
+.weather-info {
+  position:absolute; top:12px; left:12px; background: rgba(0,0,0,0.3);
+  color:white; padding:6px 10px; border-radius:6px; z-index:2;
+  pointer-events:none;
+}
+
+/* calendar 置於前景 */
+.calendar {
+  position:relative; z-index:3; background: rgba(255,255,255,0.9);
+  padding: 12px;
+  border-radius: 8px;
+  max-width:1100px;
+  margin: 0 auto;
+}
+
+/* weekday & day grid */
+.weekday-row { display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-weight:600; margin-top:8px; }
+.days-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; margin-top:8px; }
+.day { background:#fff; border-radius:6px; min-height:80px; padding:6px; box-shadow:0 1px 2px rgba(0,0,0,0.06); }
+.day.empty { background:transparent; box-shadow:none; border:none; }
+.day.today { border: 2px solid #ff8a65; background: #fffbe6; font-weight:700; }
+
+/* Task list item */
+#task-list { list-style:none; padding:0; margin:0; }
+.task-item { padding:8px; background:#fff; border-radius:6px; margin-bottom:8px; box-shadow:0 1px 2px rgba(0,0,0,0.05); display:flex; gap:8px; align-items:center; }
+.task-cat { font-size:12px; padding:4px 6px; border-radius:4px; color:white; }
+.task-cat.academics { background: #1e90ff; } /* blue */
+.task-cat.work { background: #9b59b6; ; } /* cyan-ish */
+.task-cat.other { background: #2ecc71; }
+
+/* FAB */
+.fab-group { position:fixed; right:24px; bottom:24px; z-index:10; }
+.fab-main { width:64px; height:64px; border-radius:50%; background:#ff7043; color:white; font-size:28px; border:none; box-shadow:0 6px 12px rgba(0,0,0,0.2); }
+.fab-sub { display:flex; flex-direction:column; gap:8px; margin-bottom:8px; align-items:flex-end; }
+.fab { width:48px; height:40px; border-radius:8px; background:#607d8b; color:white; border:none; }
+
+/* modal */
+.modal { position:fixed; left:0; right:0; top:0; bottom:0; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,0.4); z-index:20; }
+.modal-content { background:white; padding:16px; border-radius:8px; min-width:320px; }
+.hide { display:none; }
+
+/* 左上角氣溫顯示 */
+#weather-info {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #333;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  z-index: 900;
+}
+
+/* 字體描邊樣式，外黑內白 */
+/* 白色背景框文字 */
+.text-bg-box {
+  background-color: white;    /* 白色背景 */
+  padding: 4px 8px;           /* 內邊距 */
+  border-radius: 6px;         /* 圓角 */
+  display: inline-block;      /* 避免背景延伸整行 */
+  font-weight: bold;          /* 加粗 */
+  color: black;               /* 文字顏色 */
+}
+
