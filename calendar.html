@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="app-container">
+  <aside class="left-panel">
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <h2>Task List</h2>
+    <button id="delete-mode-btn">🗑 刪除任務</button>
+  </div>
+
+  <div id="delete-controls" style="display:none; margin-top:5px;">
+    <button id="confirm-delete" style="background:#e74c3c; color:white;">確認刪除</button>
+    <button id="cancel-delete">取消</button>
+  </div>
+
+  <ul id="task-list">
+    {% for t in tasks %}
+      <li class="task-item" data-id="{{ t.id }}">
+        <input type="checkbox" class="delete-checkbox" style="display:none;">
+        <span class="task-cat {{ t.category|lower }}">{{ t.category }}</span>
+        <strong>{{ t.name }}</strong>
+        <div class="deadline">{{ t.deadline if t.deadline else '' }}</div>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <!-- 🎬 新增循環播放影片 -->
+  <div id="loop-video-container" style="margin-top:15px; text-align:center;">
+    <video id="loop-video" autoplay muted loop playsinline style="width:100%; border-radius:10px;">
+      <source src="{{ url_for('static', filename='weather/come out.mp4') }}" type="video/mp4">
+      您的瀏覽器不支援影片播放。
+    </video>
+  </div>
+</aside>
+
+
+
+  <main class="main-panel">
+    <div class="calendar-wrapper">
+
+      <!-- 天氣動畫區 -->
+      <div id="weather-overlay" style="position:fixed; top:0; left:50%; transform:translateX(-50%); width:75vw; height:75vh; display:none; z-index:1000; text-align:center;">
+        <video id="weather-video" autoplay muted playsinline style="width:100%; height:100%; object-fit:contain;"></video>
+        <div id="weather-text" style="position:absolute; bottom:10%; left:50%; transform:translateX(-50%); font-size:2em; display:none;">
+  <span class="text-bg-box">你喜歡今天的天氣嗎？</span><br>
+  <button id="like-weather">喜歡</button>
+  <button id="dislike-weather">不喜歡</button>
+</div>
+
+
+      </div>
+
+      <!-- ✅ 天氣溫度顯示 -->
+     <div id="weather-info">
+     {{ weather.temp_c }}°C · {{ weather.desc }}
+     </div>
+
+
+      <!-- 月份切換按鈕 -->
+      <div id="calendar-controls" class="calendar-controls">
+        <button id="prevMonth">←</button>
+        <span id="currentMonth">{{ year }} 年 {{ month }} 月</span>
+        <button id="nextMonth">→</button>
+      </div>
+
+      <!-- 日曆 -->
+      <div class="calendar">
+        <div class="weekday-row">
+          <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div>
+          <div>Thu</div><div>Fri</div><div>Sat</div>
+        </div>
+
+        {% for week in days %}
+        <div class="days-grid">
+          {% for d in week %}
+            {% set is_today = (d == today) %}
+            {% if d.month != month %}
+  <div class="day other-month" data-date="{{ d }}">
+    <div class="date-number">{{ d.day }}</div>
+  </div>
+{% else %}
+  <div class="day {% if is_today %}today{% endif %}" data-date="{{ d }}">
+    <div class="date-number">{{ d.day }}</div>
+  </div>
+{% endif %}
+
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- 新增任務主要按鈕與子按鈕 -->
+<div class="fab-group">
+  <button id="fab-main" class="fab-main">＋</button>
+  <div id="fab-sub" class="fab-sub hide">
+    <button class="fab child" data-cat="Academics">學業</button>
+    <button class="fab child" data-cat="Work">工作</button>
+    <button class="fab child" data-cat="Other">其他</button>
+  </div>
+</div>
+
+<!-- 任務輸入 Modal -->
+<div id="task-modal" class="modal hide">
+  <div class="modal-content">
+    <h3 id="modal-title">新增任務</h3>
+    <label>類別: <span id="chosen-cat">Other</span></label>
+    <input type="text" id="task-name" placeholder="Task Name">
+    <input type="date" id="task-deadline">
+    <div class="modal-actions">
+      <button id="save-task">儲存</button>
+      <button id="cancel-task">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- 月份切換 JS -->
+<script>
+const data = { year: {{ year }}, month: {{ month }} };
+let year = data.year;
+let month = data.month;
+
+document.getElementById("prevMonth").addEventListener("click", () => {
+  month -= 1;
+  if (month < 1) { month = 12; year -= 1; }
+  window.location.href = `/?year=${year}&month=${month}`;
+});
+
+document.getElementById("nextMonth").addEventListener("click", () => {
+  month += 1;
+  if (month > 12) { month = 1; year += 1; }
+  window.location.href = `/?year=${year}&month=${month}`;
+});
+</script>
+
+<!-- 傳遞天氣資料 -->
+<script id="weather-data" type="application/json">{{ weather | tojson | safe }}</script>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+
+<style>
+.calendar-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3em;
+  margin-bottom: 10px;
+  gap: 1em;
+}
+
+.weekday-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-weight: bold;
+}
+
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.day {
+  padding: 10px 0;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+}
+
+.day.today {
+  background-color: #fffa90;
+  border: 2px solid #f39c12;
+  font-weight: bold;
+}
+
+.day.other-month {
+  color: #999;
+  opacity: 0.5;
+}
+
+.task-label {
+  margin-top: 3px;
+  font-size: 0.8em;
+  border-radius: 4px;
+  padding: 2px 4px;
+  display: inline-block;
+  color: white;
+}
+
+.task-label.work { background-color: #2ecc71; }
+.task-label.academics { background-color: #1e90ff; }
+.task-label.other { background-color: #9b59b6; }
+
+
+</style>
+{% endblock %}
