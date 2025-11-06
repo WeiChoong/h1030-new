@@ -146,16 +146,39 @@ setTimeout(() => {
   // 1️⃣ 更新 Task List
   const ul = document.getElementById('task-list');
   ul.innerHTML = '';
+  const today = new Date();
+
   tasks.forEach(t => {
     const li = document.createElement('li');
     li.className = 'task-item';
     li.dataset.id = t.id;
+
+    // 計算剩餘天數
+    let daysLeftText = '';
+    let dateStyle = '';
+    if (t.deadline) {
+      const deadlineDate = new Date(t.deadline);
+      const diffTime = deadlineDate - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays > 3) {
+        daysLeftText = `（${diffDays}天後到期）`;
+      } else if (diffDays > 0) {
+        daysLeftText = `（${diffDays}天後到期）`;
+        dateStyle = 'color: red; font-weight: bold;';
+      } else {
+        daysLeftText = '(已過期)';
+        dateStyle = 'color: gray; text-decoration: line-through;';
+      }
+    }
+
     li.innerHTML = `
       <input type="checkbox" class="delete-checkbox" style="display:none;">
       <span class="task-cat ${t.category.toLowerCase()}">${t.category}</span>
       <strong>${t.name}</strong>
-      <div class="deadline">${t.deadline || ''}</div>
+      <span class="deadline" style="${dateStyle}">${t.deadline || ''} ${daysLeftText}</span>
     `;
+
     ul.appendChild(li);
   });
 
@@ -174,6 +197,7 @@ setTimeout(() => {
     }
   });
 }
+
 
 
   refreshTasks();
