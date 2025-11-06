@@ -98,8 +98,8 @@ body, html { height:100%; margin:0; font-family: Arial, sans-serif; }
 .task-item { padding:8px; background:#fff; border-radius:6px; margin-bottom:8px; box-shadow:0 1px 2px rgba(0,0,0,0.05); display:flex; gap:8px; align-items:center; }
 .task-cat { font-size:12px; padding:4px 6px; border-radius:4px; color:white; }
 .task-cat.academics { background: #1e90ff; } /* blue */
-.task-cat.work { background: #9b59b6; ; } /* cyan-ish */
-.task-cat.other { background: #2ecc71; }
+.task-cat.work { background: #2ecc71; ; } /* cyan-ish */
+.task-cat.other { background: #9b59b6; }
 
 /* FAB */
 .fab-group { position:fixed; right:24px; bottom:24px; z-index:10; }
