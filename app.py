@@ -28,28 +28,27 @@ WEATHER_TO_ANIM = {
 
 def get_local_weather():
     """
-    嘗試從 wttr.in 取得簡單當日天氣（免 key），若失敗則回傳 mock。
-    如需改用 Google 天氣，需替換此邏輯並處理授權/條款。
+    從 wttr.in 抓取台北大安區天氣
     """
     try:
-        r = requests.get("http://wttr.in/?format=j1", timeout=4)
+        r = requests.get("http://wttr.in/Taipei?format=j1", timeout=4)
         j = r.json()
-        # j['current_condition'][0]['weatherDesc'][0]['value'] 例如 "Light rain"
         cc = j.get('current_condition', [{}])[0]
         desc = cc.get('weatherDesc', [{}])[0].get('value', 'Clear')
         temp_c = cc.get('temp_C', None)
+
         anim = None
-        # 嘗試 match mapping key 的一個近似 (contains)
         for k in WEATHER_TO_ANIM:
             if k.lower() in desc.lower():
                 anim = WEATHER_TO_ANIM[k]
                 break
+
         if anim is None:
             anim = WEATHER_TO_ANIM['Clear']
         return {"desc": desc, "temp_c": temp_c, "anim": anim}
-    except Exception as e:
-        # fallback mock
+    except:
         return {"desc": "Clear", "temp_c": "25", "anim": WEATHER_TO_ANIM['Clear']}
+
 
 # ===================================
 # 初始化 DB（第一次執行）
